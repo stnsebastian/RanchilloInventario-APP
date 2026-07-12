@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ranchillo - Control de Ventas de Alimento para Mascotas</title>
+    <meta name="description" content="Sistema de control y registro diario de ventas de alimento para mascotas en Ranchillo. Optimizado para celulares.">
+    
+    <!-- Mobile Web App Capable tags for iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Ranchillo">
+    <link rel="apple-touch-icon" href="./icon.png">
+    
+    <!-- Link to PWA Manifest -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#f97316">
+
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+
+    <!-- Install App Banner (PWA Alert) -->
+    <div id="installBanner" class="install-banner" style="display: none;">
+        <div class="install-content">
+            <span class="install-icon">📲</span>
+            <div>
+                <h4>Instalar Ranchillo</h4>
+                <p>Agrégala a tu pantalla de inicio para usarla offline</p>
+            </div>
+        </div>
+        <button id="installBtn" class="btn-install-banner">Instalar</button>
+        <button onclick="cerrarBannerInstalacion()" class="btn-close-banner">&times;</button>
+    </div>
+
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="header-brand">
+            <span class="logo-icon">🐾</span>
+            <h1>Ranchillo</h1>
+        </div>
+        <div class="header-actions">
+            <!-- Theme Toggle Button -->
+            <button id="themeToggle" class="btn-icon" aria-label="Cambiar tema visual" title="Cambiar tema">
+                <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+                </svg>
+                <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+                </svg>
+            </button>
+            
+            <!-- Personalización Dropdown -->
+            <div class="dropdown-wrapper">
+                <button id="paletteDropdownBtn" class="btn-icon" onclick="togglePaletteDropdown()" title="Personalizar colores">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="btn-svg" style="width: 18px; height: 18px;">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 14.7255 3.09032 17.1962 4.85857 19C5.35249 19.5 5.25055 20.3551 4.85857 21C4.35857 21.8213 4.85857 22 6 22H12Z"/>
+                        <circle cx="7.5" cy="10.5" r="1.5" fill="currentColor"/>
+                        <circle cx="11.5" cy="7.5" r="1.5" fill="currentColor"/>
+                        <circle cx="16.5" cy="9.5" r="1.5" fill="currentColor"/>
+                        <circle cx="15.5" cy="14.5" r="1.5" fill="currentColor"/>
+                    </svg>
+                </button>
+                <div id="paletteDropdownMenu" class="palette-dropdown" style="display: none;">
+                    <h4>Personalizar Colores</h4>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <button type="button" id="btnFondoPerrito" class="btn-secondary" onclick="toggleFondoPerrito()" style="font-size: 0.75rem; padding: 6px 10px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 4px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">🐶 Fondo Especial (Maxito)</button>
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <span style="font-size: 0.72rem; font-weight: 600; color: var(--text-secondary);">Paleta de Colores:</span>
+                            <div class="palette-colors-row" style="display: flex; gap: 8px; justify-content: space-between;">
+                                <button type="button" class="btn-color-dot" onclick="cambiarPaleta('azul')" style="background-color: #2563eb; width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border-color); cursor: pointer;" title="Azul"></button>
+                                <button type="button" class="btn-color-dot" onclick="cambiarPaleta('verde')" style="background-color: #16a34a; width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border-color); cursor: pointer;" title="Verde"></button>
+                                <button type="button" class="btn-color-dot" onclick="cambiarPaleta('morado')" style="background-color: #8b5cf6; width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border-color); cursor: pointer;" title="Morado"></button>
+                                <button type="button" class="btn-color-dot" onclick="cambiarPaleta('rojo')" style="background-color: #dc2626; width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border-color); cursor: pointer;" title="Rojo"></button>
+                                <button type="button" class="btn-color-dot" onclick="cambiarPaleta('naranja')" style="background-color: #ea580c; width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border-color); cursor: pointer;" title="Naranja"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container holding different Tab Sections -->
+    <main class="app-container">
+        
+        <!-- SECTION 1: DASHBOARD (PANEL) -->
+        <section id="tab-dashboard" class="tab-content active-tab">
+            <div class="section-title">
+                <h2>Resumen Financiero</h2>
+                <p>Estado de caja diario en tiempo real</p>
+            </div>
+            
+            <div class="dashboard-grid">
+                <div class="kpi-card kpi-total">
+                    <div class="kpi-icon">💰</div>
+                    <div class="kpi-content">
+                        <h3>Total General</h3>
+                        <p id="totalGeneral" class="kpi-value">$0</p>
+                    </div>
+                </div>
+                
+                <div class="kpi-card kpi-efectivo">
+                    <div class="kpi-icon">💵</div>
+                    <div class="kpi-content">
+                        <h3>Total Efectivo</h3>
+                        <p id="totalEfectivo" class="kpi-value">$0</p>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-transferencia">
+                    <div class="kpi-icon">🏦</div>
+                    <div class="kpi-content">
+                        <h3>Total Transf. / Débito</h3>
+                        <p id="totalTransferencia" class="kpi-value">$0</p>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-articulos">
+                    <div class="kpi-icon">📦</div>
+                    <div class="kpi-content">
+                        <h3>Sacos / Unidades</h3>
+                        <p id="totalArticulos" class="kpi-value">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Sales Preview -->
+            <div class="recent-sales-card card">
+                <h3>Últimos Movimientos</h3>
+                <div class="recent-list-container">
+                    <ul id="listaVentasRecientes" class="recent-sales-list">
+                        <!-- Cargado dinámicamente -->
+                    </ul>
+                    <div id="noRecentSalesMsg" class="empty-state">
+                        <span class="empty-icon">📝</span>
+                        <p>No hay ventas registradas hoy.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: SALES LOG (VENTAS) -->
+        <section id="tab-ventas" class="tab-content">
+            <div class="section-title">
+                <h2>Historial de Ventas</h2>
+                <p>Lista completa de transacciones del día</p>
+            </div>
+
+            <div class="card history-card">
+                <div class="history-filters">
+                    <div class="search-input-wrapper">
+                        <input type="text" id="buscarVenta" placeholder="🔍 Buscar producto..." oninput="filtrarVentas()">
+                    </div>
+                    <select id="filtroPago" onchange="filtrarVentas()">
+                        <option value="todos">Todos los pagos</option>
+                        <option value="Efectivo">💵 Efectivo</option>
+                        <option value="Transferencia">🏦 Transferencia</option>
+                        <option value="Débito">💳 Débito</option>
+                    </select>
+                </div>
+
+                <div class="table-container">
+                    <table id="tablaVentas">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cant.</th>
+                                <th>Pago</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaVentas">
+                            <!-- Ventas cargadas dinámicamente -->
+                        </tbody>
+                    </table>
+                    <div id="noVentasMsg" class="empty-state" style="display: none;">
+                        <span class="empty-icon">🔍</span>
+                        <p>No se encontraron ventas para esta búsqueda.</p>
+                    </div>
+                </div>
+
+                <div class="history-actions">
+                    <button class="btn-whatsapp flex-center" onclick="enviarWhatsApp()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="btn-svg">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        </svg>
+                        <span>Enviar Reporte</span>
+                    </button>
+                    <button class="btn-danger flex-center" onclick="eliminarVentas()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="btn-svg">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                        <span>Reiniciar</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: PRODUCT MANAGEMENT (PRODUCTOS) -->
+        <section id="tab-productos" class="tab-content">
+            <div class="section-title">
+                <h2>Catálogo de Productos</h2>
+                <p>Administra los precios e inventario</p>
+            </div>
+
+            <!-- Add Product Form Card -->
+            <div class="card add-product-card">
+                <h3>Agregar Nuevo Producto</h3>
+                <form id="registroProductoForm" onsubmit="event.preventDefault(); guardarProducto();">
+                    <div class="form-row-mobile">
+                        <div class="form-group flex-grow">
+                            <label for="nuevoProductoNombre">Nombre del Producto</label>
+                            <input type="text" id="nuevoProductoNombre" placeholder="Ej: Master Dog Adulto 15kg" required>
+                        </div>
+                    </div>
+                    <div class="form-row-mobile" style="margin-top: 10px;">
+                        <div class="form-group flex-grow">
+                            <label for="nuevoProductoPrecio">Precio ($)</label>
+                            <input type="number" id="nuevoProductoPrecio" placeholder="Ej: 18500" min="0" required>
+                        </div>
+                        <div class="form-group flex-grow">
+                            <label for="nuevoProductoStock">Stock Inicial</label>
+                            <input type="number" id="nuevoProductoStock" placeholder="Ej: 10" min="0" value="0" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-secondary btn-full">
+                        <span>➕ Agregar al Catálogo</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Database Loading Options Card -->
+            <div class="card database-card">
+                <h3>Base de Datos de Alimentos</h3>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">
+                    ¿Quieres preconfigurar la app con las marcas de alimento más populares en Chile (Master Dog, Champion, Whiskas, Pro Plan, etc.)?
+                </p>
+                <button type="button" class="btn-secondary btn-full" onclick="cargarBaseDatosPredeterminada()" style="background-color: var(--accent-color);">
+                    📥 Cargar Base de Datos Predeterminada
+                </button>
+            </div>
+
+<!-- Products List Table Card -->
+            <div class="card catalog-list-card">
+                <h3>Productos Registrados</h3>
+                <div class="table-container">
+                    <table id="tablaProductosModal">
+                        <thead>
+                            <tr>
+                                <th>Nombre del Producto</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th style="text-align: center;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaProductosModal">
+                            <!-- Productos cargados dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: REPORTS (REPORTES) -->
+        <section id="tab-reportes" class="tab-content">
+            <div class="section-title">
+                <h2>Reportes y Estadísticas</h2>
+                <p>Análisis de ventas e inventario</p>
+            </div>
+
+            <!-- Selectores de Período -->
+            <div class="card reports-selectors-card">
+                <div class="reports-selectors">
+                    <div class="selector-group">
+                        <label>Tipo de Reporte</label>
+                        <div class="period-selector">
+                            <button id="btnPeriodoDiario" class="btn-period-type active-period" onclick="cambiarPeriodoReporte('diario')">Diario</button>
+                            <button id="btnPeriodoMensual" class="btn-period-type" onclick="cambiarPeriodoReporte('mensual')">Mensual</button>
+                            <button id="btnPeriodoAnual" class="btn-period-type" onclick="cambiarPeriodoReporte('anual')">Anual</button>
+                        </div>
+                    </div>
+                    
+                    <div class="selector-group" id="group-selector-fecha">
+                        <label for="reporteFecha">Seleccionar Día</label>
+                        <div class="date-input-wrapper">
+                            <input type="date" id="reporteFecha" onchange="cargarReporte()">
+                        </div>
+                    </div>
+                    
+                    <div class="selector-group" id="group-selector-mes" style="display: none;">
+                        <label for="reporteMes">Seleccionar Mes</label>
+                        <div class="date-input-wrapper">
+                            <select id="reporteMes" onchange="cargarReporte()">
+                                <!-- Llenado dinámicamente en JS -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="selector-group" id="group-selector-anio" style="display: none;">
+                        <label for="reporteAnio">Seleccionar Año</label>
+                        <div class="date-input-wrapper">
+                            <select id="reporteAnio" onchange="cargarReporte()">
+                                <!-- Llenado dinámicamente en JS -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumen Financiero del Período -->
+            <div class="card reports-summary-card">
+                <h3 id="tituloReporte">Reporte del Día</h3>
+                <div class="dashboard-grid" style="margin-top: 14px;">
+                    <div class="kpi-card kpi-total">
+                        <div class="kpi-icon">💰</div>
+                        <div class="kpi-content">
+                            <h3>Total Ventas</h3>
+                            <p id="repTotalGeneral" class="kpi-value" style="font-size: 1.3rem;">$0</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card kpi-efectivo">
+                        <div class="kpi-icon">💵</div>
+                        <div class="kpi-content">
+                            <h3>Efectivo</h3>
+                            <p id="repTotalEfectivo" class="kpi-value" style="font-size: 1.3rem;">$0</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card kpi-transferencia">
+                        <div class="kpi-icon">🏦</div>
+                        <div class="kpi-content">
+                            <h3>Transf. / Débito</h3>
+                            <p id="repTotalTransferencia" class="kpi-value" style="font-size: 1.3rem;">$0</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card kpi-articulos">
+                        <div class="kpi-icon">📦</div>
+                        <div class="kpi-content">
+                            <h3>Cant. Vendida</h3>
+                            <p id="repTotalArticulos" class="kpi-value" style="font-size: 1.3rem;">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estado de Inventario / Bodega -->
+            <div class="card reports-inventory-card">
+                <h3>Estado de Inventario (Bodega)</h3>
+                <div class="dashboard-grid" style="margin-top: 14px; margin-bottom: 20px;">
+                    <div class="kpi-card" style="background-color: var(--primary-light); color: var(--text-primary); padding: 12px 16px;">
+                        <div class="kpi-icon" style="font-size: 1.5rem;">💰</div>
+                        <div class="kpi-content">
+                            <h3 style="font-size: 0.72rem;">Valor en Bodega</h3>
+                            <p id="repValorBodega" class="kpi-value" style="font-size: 1.25rem;">$0</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card" style="background-color: var(--bg-primary); color: var(--text-primary); padding: 12px 16px;">
+                        <div class="kpi-icon" style="font-size: 1.5rem;">⚠️</div>
+                        <div class="kpi-content">
+                            <h3 style="font-size: 0.72rem;">Stock Crítico (&lt;3)</h3>
+                            <p id="repStockCritico" class="kpi-value" style="font-size: 1.25rem;">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="noStockAlertsMsg" class="empty-state" style="padding: 10px; display: none;">
+                    <span class="empty-icon">✅</span>
+                    <p>Todo el inventario está con buen stock.</p>
+                </div>
+                
+                <ul id="listaAlertasStock" class="stock-alerts-list" style="margin-bottom: 20px;">
+                    <!-- Cargado dinámicamente -->
+                </ul>
+
+                <button class="btn-whatsapp flex-center" style="width: 100%;" onclick="compartirReporte()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="btn-svg">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                    <span>Enviar Inventario por WhatsApp</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FLOATING ACTION BUTTON (FAB) FOR SALES REGISTRATION -->
+    <button id="salesFAB" class="floating-action-button" onclick="abrirModalRegistro()" aria-label="Registrar nueva venta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="fab-icon">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+    </button>
+
+    <!-- BOTTOM SHEET DRAWER: REGISTRATION FORM FOR NEW SALE -->
+    <div id="bottomSheetRegistro" class="bottom-sheet-overlay" onclick="event.target === this && cerrarModalRegistro()">
+        <div class="bottom-sheet">
+            <div class="bottom-sheet-handle"></div>
+            
+            <div class="bottom-sheet-header">
+                <h2>Registrar Nueva Venta</h2>
+                <button class="close-sheet-btn" onclick="cerrarModalRegistro()" aria-label="Cerrar formulario">&times;</button>
+            </div>
+            
+            <div class="bottom-sheet-body">
+                <form id="registroVentaForm" onsubmit="event.preventDefault(); registrarVenta();">
+                    
+                    <div class="form-group">
+                        <label for="productoSelect">Seleccionar Producto</label>
+                        <div class="select-wrapper">
+                            <select id="productoSelect" required></select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cantidad">Cantidad (Sacos / Unidades)</label>
+                        <div class="quantity-control">
+                            <button type="button" class="qty-btn" onclick="cambiarCantidad(-1)">-</button>
+                            <input type="number" id="cantidad" min="1" value="1" required>
+                            <button type="button" class="qty-btn" onclick="cambiarCantidad(1)">+</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Método de Pago</label>
+                        <div class="radio-pill-group">
+                            <label class="radio-pill">
+                                <input type="radio" name="pago" value="Efectivo" checked>
+                                <span class="pill-label">
+                                    <span class="pill-icon">💵</span> Efectivo
+                                </span>
+                            </label>
+                            <label class="radio-pill">
+                                <input type="radio" name="pago" value="Transferencia">
+                                <span class="pill-label">
+                                    <span class="pill-icon">🏦</span> Transferencia
+                                </span>
+                            </label>
+                            <label class="radio-pill">
+                                <input type="radio" name="pago" value="Débito">
+                                <span class="pill-label">
+                                    <span class="pill-icon">💳</span> Débito
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary btn-large">
+                        <span>➕ Guardar Transacción</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAVIGATION BAR FOR MOBILE DEVS -->
+    <nav class="bottom-nav">
+        <button class="nav-item active-nav" onclick="cambiarTab('tab-dashboard', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-icon">
+                <rect x="3" y="3" width="7" height="9" rx="1"></rect>
+                <rect x="14" y="3" width="7" height="5" rx="1"></rect>
+                <rect x="14" y="12" width="7" height="9" rx="1"></rect>
+                <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+            </svg>
+            <span>Panel</span>
+        </button>
+
+        <button class="nav-item" onclick="cambiarTab('tab-ventas', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-icon">
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+            <span>Ventas</span>
+        </button>
+
+        <button class="nav-item" onclick="cambiarTab('tab-reportes', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-icon">
+                <line x1="12" y1="20" x2="12" y2="10"></line>
+                <line x1="18" y1="20" x2="18" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+            </svg>
+            <span>Reportes</span>
+        </button>
+
+        <button class="nav-item" onclick="cambiarTab('tab-productos', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-icon">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                <line x1="7" y1="7" x2="7.01" y2="7"></line>
+            </svg>
+            <span>Catálogo</span>
+        </button>
+    </nav>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast-notification"></div>
+
+    <script type="module" src="./app.js"></script>
+</body>
+</html>
