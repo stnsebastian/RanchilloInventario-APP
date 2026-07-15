@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ranchillo-cache-v6';
+const CACHE_NAME = 'ranchillo-cache-v8';
 const ASSETS = [
     './',
     './index.html',
@@ -44,15 +44,18 @@ self.addEventListener('fetch', event => {
                 
                 // Si no está en caché, va a la red
                 return fetch(event.request).then(networkResponse => {
-                    if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+                    if (!networkResponse || networkResponse.status !== 200) {
                         return networkResponse;
                     }
                     
-                    // Clonamos la respuesta para guardar en caché
-                    const responseToCache = networkResponse.clone();
-                    caches.open(CACHE_NAME).then(cache => {
-                        cache.put(event.request, responseToCache);
-                    });
+                    // Permitimos guardar en caché recursos locales (basic), cors (como fuentes) y opaque (no-cors)
+                    const tiposPermitidos = ['basic', 'cors', 'opaque'];
+                    if (tiposPermitidos.includes(networkResponse.type)) {
+                        const responseToCache = networkResponse.clone();
+                        caches.open(CACHE_NAME).then(cache => {
+                            cache.put(event.request, responseToCache);
+                        });
+                    }
                     
                     return networkResponse;
                 }).catch(() => {
