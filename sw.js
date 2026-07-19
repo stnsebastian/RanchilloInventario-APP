@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ranchillo-cache-v10';
+const CACHE_NAME = 'ranchillo-cache-v10.1';
 const ASSETS = [
     './',
     './index.html',
