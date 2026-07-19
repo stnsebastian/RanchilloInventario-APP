@@ -1,6 +1,6 @@
 {
   "name": "Ranchillo Inventario",
-  "short_name": "Ranchillo Inventario",
+  "short_name": "Ranchillo Ventas",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#f8fafc",

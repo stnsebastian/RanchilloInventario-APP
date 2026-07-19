@@ -5,8 +5,47 @@ function registrarServiceWorker() {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js')
-                .then(reg => console.log('Service Worker registrado con éxito:', reg.scope))
+                .then(reg => {
+                    console.log('Service Worker registrado con éxito:', reg.scope);
+                    
+                    // Forzar verificación de actualización inmediatamente al abrir la app
+                    reg.update();
+
+                    // Verificar actualizaciones cuando la app vuelve a estar visible en primer plano
+                    document.addEventListener('visibilitychange', () => {
+                        if (document.visibilityState === 'visible') {
+                            reg.update();
+                        }
+                    });
+                    
+                    // Detectar actualizaciones automáticas cuando se suben cambios a GitHub
+                    reg.onupdatefound = () => {
+                        const installingWorker = reg.installing;
+                        if (installingWorker) {
+                            installingWorker.onstatechange = () => {
+                                if (installingWorker.state === 'installed') {
+                                    if (navigator.serviceWorker.controller) {
+                                        console.log('Nueva versión disponible. Aplicando actualización...');
+                                        showToast('🔄 Nueva actualización detectada. Aplicando mejoras...');
+                                        setTimeout(() => {
+                                            window.location.reload();
+                                        }, 1500);
+                                    }
+                                }
+                            };
+                        }
+                    };
+                })
                 .catch(err => console.error('Fallo al registrar Service Worker:', err));
+        });
+
+        // Forzar recarga inmediata de la página cuando el nuevo service worker toma el control
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (!refreshing) {
+                refreshing = true;
+                window.location.reload();
+            }
         });
     }
 }
